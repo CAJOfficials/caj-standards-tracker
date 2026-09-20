@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Standards Comparison — 2026-27 | Cambridge Aquajets</title>
+<meta name="description" content="Compare a swimmer's time side by side against the Western Region, Ontario Age Group and Ontario Championship qualifying standards for the 2026-27 season.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="aj-page">
+
+  <div class="aj-banner">
+    <h1>Standards Comparison</h1>
+    <p>Enter a time and see exactly how far it sits from the Western Region, OAG and OSC qualifying standards.</p>
+  </div>
+
+  <!-- ============ selector + time entry ============ -->
+  <section class="aj-card">
+    <h2>Select an Event</h2>
+
+    <form id="cmpForm" autocomplete="off">
+      <div class="aj-fields">
+        <div class="field">
+          <label for="cGender">Gender</label>
+          <select id="cGender"><option>Female</option><option>Male</option></select>
+        </div>
+        <div class="field">
+          <label for="cAge">Age Band</label>
+          <select id="cAge"></select>
+        </div>
+        <div class="field">
+          <label for="cCourse">Course</label>
+          <select id="cCourse">
+            <option value="SCM">Short Course (SCM)</option>
+            <option value="LCM">Long Course (LCM)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="cEvent">Event</label>
+          <select id="cEvent"></select>
+        </div>
+      </div>
+
+      <div class="aj-timebox">
+        <div class="field time">
+          <label for="myTime">Your Best Time <span class="hint">mm:ss.hh or ss.hh</span></label>
+          <input type="text" id="myTime" inputmode="decimal" placeholder="e.g. 2:31.44 or 31.44"
+                 aria-describedby="timeFeedback">
+        </div>
+        <button type="button" class="aj-btn" id="applyBtn">Compare My Time</button>
+        <button type="button" class="aj-btn ghost" id="clearBtn">Clear Time</button>
+        <p class="time-feedback" id="timeFeedback" role="status"></p>
+      </div>
+    </form>
+  </section>
+
+  <!-- ============ your standing ============ -->
+  <section class="aj-card alt" id="standingCard" hidden>
+    <h2>Where Your Time Stands</h2>
+    <div id="standing"></div>
+  </section>
+
+  <!-- ============ side by side ============ -->
+  <section class="aj-card" id="compareCard">
+    <h2>How Close Are You?</h2>
+    <div id="comparePanel"></div>
+  </section>
+
+  <!-- ============ note ============ -->
+  <div class="aj-note">
+    <h3>Important Note</h3>
+    <p>Standards, qualifying periods, age categories and accepted courses can change. Swim Ontario had not released a
+    2026-27-specific OSC/OAG revision when this page was built, so the current published standards set is shown,
+    alongside the previous season's Regional standards. Before entering a meet, confirm every requirement in the
+    meet package and with your coach.</p>
+  </div>
+
+  <!-- ============ closing message ============ -->
+  <section class="aj-card aj-closing">
+    <h2>A Note for Swimmers</h2>
+    <p class="lead">Remember: every swimmer’s journey is completely unique. While this tool is here to make tracking
+    specific regional and provincial benchmarks easier, it is just a set of numbers.</p>
+    <p>For many of our Aquajets, swimming is about building lifelong friendships, staying active, mastering skills and
+    simply having fun in the water. Whether you are chasing a specific cut, aiming to shave off a single second, or just
+    competing for the love of the sport, your value to our team isn’t measured by a clock. Use this tool if it helps
+    you set your own personal goals, but remember that progress comes in many forms — and enjoying the ride is the
+    most important part of all.</p>
+  </section>
+
+  <!-- ============ sources ============ -->
+  <section class="aj-card">
+    <h2>Sources</h2>
+    <ul class="aj-sources">
+      <li><strong>OSC &amp; OAG</strong> — Swim Ontario Olympic Program Age Group standards workbook.
+        <a href="https://www.swimontario.com/athletes/time-standards/" target="_blank" rel="noopener">swimontario.com — Time Standards</a></li>
+      <li><strong>Regional (Western Region)</strong> — Western Ontario Swim Association time standards, 2025-2026.
+        <a href="https://www.gomotionapp.com/canca/UserFiles/Image/QuickUpload/wosa-time-standards-2025-2026_017466.pdf" target="_blank" rel="noopener">WOSA Time Standards 2025-2026 (PDF)</a></li>
+    </ul>
+  </section>
+
+</div>
+
+<script src="standards.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
