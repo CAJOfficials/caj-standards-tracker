@@ -81,7 +81,7 @@ window.SWIM_STANDARDS = [{"level":"Regional","gender":"Female","age":"10 & Under
 {"level":"Regional","gender":"Female","age":"15","course":"SCM","distance":1500,"stroke":"Freestyle","seconds":1229.25,"time":"20:29.25","event":"1500 Freestyle"},
 {"level":"Regional","gender":"Female","age":"16","course":"SCM","distance":1500,"stroke":"Freestyle","seconds":1216.95,"time":"20:16.95","event":"1500 Freestyle"},
 {"level":"Regional","gender":"Female","age":"17 & Over","course":"SCM","distance":1500,"stroke":"Freestyle","seconds":1204.79,"time":"20:04.79","event":"1500 Freestyle"},
-{"level":"Regional","gender":"Female","age":"17 & Over","course":"LCM","distance":1500,"stroke":"Freestyle","seconds":1831.68,"time":"30:31.68","event":"1500 Freestyle"},
+{"level":"Regional","gender":"Female","age":"17 & Over","course":"LCM","distance":1500,"stroke":"Freestyle","seconds":1231.68,"time":"20:31.68","event":"1500 Freestyle"},
 {"level":"Regional","gender":"Female","age":"16","course":"LCM","distance":1500,"stroke":"Freestyle","seconds":1244.11,"time":"20:44.11","event":"1500 Freestyle"},
 {"level":"Regional","gender":"Female","age":"15","course":"LCM","distance":1500,"stroke":"Freestyle","seconds":1256.68,"time":"20:56.68","event":"1500 Freestyle"},
 {"level":"Regional","gender":"Female","age":"14","course":"LCM","distance":1500,"stroke":"Freestyle","seconds":1269.38,"time":"21:09.38","event":"1500 Freestyle"},
