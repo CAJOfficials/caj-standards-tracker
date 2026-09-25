@@ -13,7 +13,7 @@
 
   /* A swimmer's own goal time. Not a published standard, so it never counts toward
      "Qualified for ..." or the coach note, but it is charted and tabled like one. */
-  var CUSTOM = { key: 'Custom', label: 'Custom', short: 'your custom target', sub: 'Your personal goal',
+  var CUSTOM = { key: 'Custom', label: 'Personal Target', short: 'your personal target', sub: 'Your own goal',
                  tier: 'Personal', color: '#D9AE00', custom: true };
 
   var LV = {};
@@ -161,13 +161,17 @@
     if (cust) {
       var cd = myTime - cust.row.seconds;
       summary.appendChild(el('span', 'next-line', cd <= 0
-        ? 'Custom target of ' + cust.row.time + ' reached \u2014 ' + fmt(Math.abs(cd)) + ' to spare.'
-        : 'Custom target: ' + cust.row.time + ' \u2014 ' + fmt(cd) + ' to drop.'));
+        ? 'Personal target time of ' + cust.row.time + ' reached \u2014 ' + fmt(Math.abs(cd)) + ' to spare.'
+        : 'Personal target time: ' + cust.row.time + ' \u2014 ' + fmt(cd) + ' to drop.'));
     }
     box.appendChild(summary);
 
     var grid = el('div', 'standing-grid');
-    have.forEach(function (f) {
+    /* Order tiles by % improvement needed: closest to (or furthest inside) the cut on the
+       left, largest gap on the right. */
+    have.slice().sort(function (a, b) {
+      return (myTime - a.row.seconds) / myTime - (myTime - b.row.seconds) / myTime;
+    }).forEach(function (f) {
       var d = myTime - f.row.seconds;      // positive = still to drop
       var ok = d <= 0;
       var tile = el('div', 'st-tile' + (ok ? ' met' : ''));
@@ -299,7 +303,7 @@
       var col = el('div', 'v-col');
 
       var metHere = myTime != null && myTime <= f.row.seconds;
-      var tl = el('span', 'v-std' + (isNarrow() && metHere ? ' below' : ''),
+      var tl = el('span', 'v-std' + (metHere ? ' below' : ''),
         isNarrow() ? f.row.time : f.level.label + '  ' + f.row.time);
       tl.style.top = WALL + '%';
       col.appendChild(tl);
@@ -472,8 +476,8 @@
       customTime = null;
     } else {
       customTime = parseTime(rawC);
-      if (customTime == null) { bad = true; msgs.push('Could not read the custom target. Use 2:31.44, 31.44 or 231.44.'); }
-      else msgs.push('Custom target ' + fmt(customTime) + '.');
+      if (customTime == null) { bad = true; msgs.push('Could not read the personal target time. Use 2:31.44, 31.44 or 231.44.'); }
+      else msgs.push('Personal target time ' + fmt(customTime) + '.');
     }
 
     fb.className = 'time-feedback' + (bad ? ' bad' : '');
