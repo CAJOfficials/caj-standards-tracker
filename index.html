@@ -48,8 +48,13 @@
           <input type="text" id="myTime" inputmode="decimal" placeholder="e.g. 2:31.44 or 31.44"
                  aria-describedby="timeFeedback">
         </div>
+        <div class="field time">
+          <label for="customTime">Custom Target <span class="hint">optional &middot; your own goal</span></label>
+          <input type="text" id="customTime" inputmode="decimal" placeholder="e.g. 2:25.00 or 29.50"
+                 aria-describedby="timeFeedback">
+        </div>
         <button type="button" class="aj-btn" id="applyBtn">Compare My Time</button>
-        <button type="button" class="aj-btn ghost" id="clearBtn">Clear Time</button>
+        <button type="button" class="aj-btn ghost" id="clearBtn">Clear Times</button>
         <p class="time-feedback" id="timeFeedback" role="status"></p>
       </div>
     </form>

@@ -11,6 +11,11 @@
     { key: 'OSC',      label: 'OSC',      short: 'OSC',       sub: 'Ontario Championships', tier: 'Provincial', color: '#003b7a' }
   ];
 
+  /* A swimmer's own goal time. Not a published standard, so it never counts toward
+     "Qualified for ..." or the coach note, but it is charted and tabled like one. */
+  var CUSTOM = { key: 'Custom', label: 'Custom', short: 'your custom target', sub: 'Your personal goal',
+                 tier: 'Personal', color: '#D9AE00', custom: true };
+
   var LV = {};
   LEVELS.forEach(function (l, i) { LV[l.key] = l; l.order = i; });
 
@@ -19,6 +24,7 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var myTime = null;            // seconds, or null
+  var customTime = null;        // swimmer's own target, seconds, or null
   var NARROW = 700;                              // px — below this we treat it as a phone
   function isNarrow() { return window.innerWidth < NARROW; }
   var chartMode = isNarrow() ? 'scale' : 'bars';  // vertical on phones, horizontal on desktop
@@ -37,6 +43,10 @@
     if (cls) n.className = cls;
     if (text != null) n.textContent = text;
     return n;
+  }
+  function badgeText(f, ok) {
+    if (f.level.custom) return ok ? 'Achieved' : 'Not yet';
+    return ok ? 'Qualified' : 'Not yet';
   }
   function uniq(a) { return a.filter(function (v, i) { return a.indexOf(v) === i; }); }
   function byOrder(list) {
@@ -130,10 +140,12 @@
       s.dist + 'm ' + s.stroke + ' · ' + s.gender + ' · ' + s.age + ' · ' + s.course));
     box.appendChild(head);
 
-    var met = have.filter(function (f) { return myTime <= f.row.seconds; });
+    var official = have.filter(function (f) { return !f.level.custom; });
+    var cust = have.filter(function (f) { return f.level.custom; })[0];
+    var met = official.filter(function (f) { return myTime <= f.row.seconds; });
     var next = null;
-    for (var i = 0; i < have.length; i++) {
-      if (myTime > have[i].row.seconds) { next = have[i]; break; }
+    for (var i = 0; i < official.length; i++) {
+      if (myTime > official[i].row.seconds) { next = official[i]; break; }
     }
     var summary = el('p', 'standing-summary');
     if (!met.length) {
@@ -146,6 +158,12 @@
       summary.appendChild(el('span', 'next-line',
         'Next target: ' + next.level.label + ' — ' + fmt(myTime - next.row.seconds) + ' to drop.'));
     }
+    if (cust) {
+      var cd = myTime - cust.row.seconds;
+      summary.appendChild(el('span', 'next-line', cd <= 0
+        ? 'Custom target of ' + cust.row.time + ' reached \u2014 ' + fmt(Math.abs(cd)) + ' to spare.'
+        : 'Custom target: ' + cust.row.time + ' \u2014 ' + fmt(cd) + ' to drop.'));
+    }
     box.appendChild(summary);
 
     var grid = el('div', 'standing-grid');
@@ -154,13 +172,13 @@
       var ok = d <= 0;
       var tile = el('div', 'st-tile' + (ok ? ' met' : ''));
       tile.appendChild(el('div', 'lv', f.level.label));
-      tile.appendChild(el('div', 'std', 'Standard ' + f.row.time));
+      tile.appendChild(el('div', 'std', (f.level.custom ? 'Target ' : 'Standard ') + f.row.time));
       tile.appendChild(el('div', 'delta ' + (ok ? 'met' : 'gap'),
         (ok ? '−' : '+') + fmt(Math.abs(d))));
       tile.appendChild(el('div', 'pct', ok
-        ? fmt(Math.abs(d)) + ' inside the cut'
+        ? fmt(Math.abs(d)) + (f.level.custom ? ' faster than target' : ' inside the cut')
         : (d / myTime * 100).toFixed(1) + '% improvement needed'));
-      tile.appendChild(el('span', 'badge ' + (ok ? 'met' : 'gap'), ok ? 'Qualified' : 'Not yet'));
+      tile.appendChild(el('span', 'badge ' + (ok ? 'met' : 'gap'), badgeText(f, ok)));
       grid.appendChild(tile);
     });
     box.appendChild(grid);
@@ -231,7 +249,7 @@
 
       var right = el('div', 'gc-std');
       right.appendChild(el('b', null, f.row.time));
-      if (myTime != null) right.appendChild(el('span', 'badge ' + (ok ? 'met' : 'gap'), ok ? 'Qualified' : 'Not yet'));
+      if (myTime != null) right.appendChild(el('span', 'badge ' + (ok ? 'met' : 'gap'), badgeText(f, ok)));
       row.appendChild(right);
 
       box.appendChild(row);
@@ -280,7 +298,9 @@
     have.forEach(function (f) {
       var col = el('div', 'v-col');
 
-      var tl = el('span', 'v-std', isNarrow() ? f.row.time : f.level.label + '  ' + f.row.time);
+      var metHere = myTime != null && myTime <= f.row.seconds;
+      var tl = el('span', 'v-std' + (isNarrow() && metHere ? ' below' : ''),
+        isNarrow() ? f.row.time : f.level.label + '  ' + f.row.time);
       tl.style.top = WALL + '%';
       col.appendChild(tl);
 
@@ -325,7 +345,7 @@
       cell.appendChild(el('div', 'sb', f.level.sub));
       if (myTime != null) {
         var okf = myTime <= f.row.seconds;
-        cell.appendChild(el('span', 'badge ' + (okf ? 'met' : 'gap'), okf ? 'Qualified' : 'Not yet'));
+        cell.appendChild(el('span', 'badge ' + (okf ? 'met' : 'gap'), badgeText(f, okf)));
       }
       cols.appendChild(cell);
     });
@@ -354,6 +374,9 @@
       var r = lookup(l.key, s.gender, s.age, s.course, s.dist, s.stroke);
       if (r) have.push({ level: l, row: r });
     });
+    if (customTime != null) {
+      have.unshift({ level: CUSTOM, row: { seconds: customTime, time: fmt(customTime) } });
+    }
 
     var head = el('div', 'cmp-head');
     head.appendChild(el('h3', null, s.dist + 'm ' + s.stroke));
@@ -405,7 +428,7 @@
         var ok = d <= 0;
         tr.appendChild(el('td', 'num ' + (ok ? 'val-met' : 'val-far'), (ok ? '\u2212' : '+') + fmt(Math.abs(d))));
         tr.appendChild(el('td', 'num ' + (ok ? 'val-met' : 'val-far'),
-          ok ? 'Qualified' : (d / myTime * 100).toFixed(1) + '% off'));
+          ok ? badgeText(f, true) : (d / myTime * 100).toFixed(1) + '% off'));
       }
       tb.appendChild(tr);
     });
@@ -419,7 +442,7 @@
       : 'Enter your best time above to add your PB, your gap to each cut and your qualifying status to this table.'));
 
     if (myTime != null) {
-      var met = have.some(function (f) { return myTime <= f.row.seconds; });
+      var met = have.some(function (f) { return !f.level.custom && myTime <= f.row.seconds; });
       panel.appendChild(el('p', 'coach-note ' + (met ? 'good' : 'wait'), met
         ? 'You have met at least one standard here \u2014 check with your coach before counting on it. Cuts, ' +
           'qualifying windows and meet entry rules are occasionally revised at short notice.'
@@ -433,31 +456,41 @@
   /* ---------------------------------------------------- time entry */
   function applyTime() {
     var raw = $('myTime').value;
+    var rawC = $('customTime').value;
     var fb = $('timeFeedback');
+    var msgs = [], bad = false;
+
     if (!raw.trim()) {
-      myTime = null; fb.className = 'time-feedback'; fb.textContent = '';
-      renderCompare(); return;
-    }
-    var t = parseTime(raw);
-    if (t == null) {
       myTime = null;
-      fb.className = 'time-feedback bad';
-      fb.textContent = 'Could not read that time. Use 2:31.44, 31.44 or 231.44.';
-      renderCompare(); return;
+    } else {
+      myTime = parseTime(raw);
+      if (myTime == null) { bad = true; msgs.push('Could not read your best time. Use 2:31.44, 31.44 or 231.44.'); }
+      else msgs.push('Comparing ' + fmt(myTime) + '.');
     }
-    myTime = t;
-    fb.className = 'time-feedback';
-    fb.textContent = 'Comparing ' + fmt(t) + '.';
+
+    if (!rawC.trim()) {
+      customTime = null;
+    } else {
+      customTime = parseTime(rawC);
+      if (customTime == null) { bad = true; msgs.push('Could not read the custom target. Use 2:31.44, 31.44 or 231.44.'); }
+      else msgs.push('Custom target ' + fmt(customTime) + '.');
+    }
+
+    fb.className = 'time-feedback' + (bad ? ' bad' : '');
+    fb.textContent = msgs.join(' ');
     renderCompare();
   }
 
   $('applyBtn').addEventListener('click', applyTime);
   $('myTime').addEventListener('change', applyTime);
-  $('myTime').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') { e.preventDefault(); applyTime(); }
+  ['myTime', 'customTime'].forEach(function (id) {
+    $(id).addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); applyTime(); }
+    });
   });
+  $('customTime').addEventListener('change', applyTime);
   $('clearBtn').addEventListener('click', function () {
-    $('myTime').value = ''; applyTime();
+    $('myTime').value = ''; $('customTime').value = ''; applyTime();
   });
   var rz;
   window.addEventListener('resize', function () {
