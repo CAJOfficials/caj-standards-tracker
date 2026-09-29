@@ -167,11 +167,8 @@
     box.appendChild(summary);
 
     var grid = el('div', 'standing-grid');
-    /* Order tiles by % improvement needed: closest to (or furthest inside) the cut on the
-       left, largest gap on the right. */
-    have.slice().sort(function (a, b) {
-      return (myTime - a.row.seconds) / myTime - (myTime - b.row.seconds) / myTime;
-    }).forEach(function (f) {
+    /* already sorted by % gap in renderCompare */
+    have.forEach(function (f) {
       var d = myTime - f.row.seconds;      // positive = still to drop
       var ok = d <= 0;
       var tile = el('div', 'st-tile' + (ok ? ' met' : ''));
@@ -380,6 +377,13 @@
     });
     if (customTime != null) {
       have.unshift({ level: CUSTOM, row: { seconds: customTime, time: fmt(customTime) } });
+    }
+    /* With a best time entered, every view (tiles, both charts, table) is ordered by
+       % gap to the target: already met / smallest gap first, largest gap last. */
+    if (myTime != null) {
+      have.sort(function (a, b) {
+        return (myTime - a.row.seconds) / myTime - (myTime - b.row.seconds) / myTime;
+      });
     }
 
     var head = el('div', 'cmp-head');
