@@ -414,6 +414,7 @@
 }
 .aj-note h3 { font-size: 18px; color: var(--red); margin-bottom: 6px; }
 .aj-note p { color: #6b3d3d; font-size: 14px; }
+.aj-note p.note-updated { margin-top: 10px; font-size: 13px; }
 
 /* ---------- sources ---------- */
 .aj-sources { margin: 0; padding-left: 20px; font-size: 14px; }
